@@ -16,10 +16,15 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http
+		http			
 			.authorizeRequests()
-				.antMatchers("**/protected/**", "/Home").permitAll()
-				.anyRequest().authenticated()
+			// url pattern should be from starting ..  /api/xyz/**
+			// the below uri need not be authenticated
+				.antMatchers("/api/public/**", "/Home").permitAll() 
+				// if the uri has string "protected in it then protect"
+				.requestMatchers( req -> req.getRequestURI().contains("protected")).authenticated()
+				// below api needs to autenticate. but the entire api should match
+				//.antMatchers("/api/protected/**").authenticated()
 				.and()
 			.formLogin()
 				.loginPage("/login")
